@@ -50,28 +50,42 @@ export default {
                 .then((response) => {
                     // Проверяем, если ответ успешный и есть данные
                     if (response.data) {
-                        console.log(response);
+                        let user = {
+                            name: response.data.name,
+                            lastname: response.data.lastname,
+                        };
+                        this.$store.dispatch("login", user);
                         this.$router.push("/profile"); // Перенаправляем на страницу профиля
+                        console.log(this.$store.state.isAuthorised);
                     } else if (response.data.error) {
                         console.log(response.data.error);
                         this.errorMessage = response.data.error;
                     }
                 })
                 .catch((error) => {
-                    console.error("Error:", error);
-                    this.errorMessage = "An unexpected error occurred.";
+                    switch (error.status) {
+                        case 404:
+                            this.errorMessage =
+                                "Неверное имя пользователя или пароль";
+                            break;
+                        default:
+                            this.errorMessage = "An unexpected error occurred.";
+                            break;
+                    }
                 });
         },
     },
     mounted() {
         this.$router.push("/login");
+        console.log(this.$store);
+        console.log(this.$store.state.isAuthorised);
     },
 };
 </script>
 
 <style scoped>
 .login {
-    font-family: "Finlandica", sans-serif;
+    font-family: "Roboto", sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;

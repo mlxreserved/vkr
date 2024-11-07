@@ -17,6 +17,9 @@
             <th>Группа</th>
             <th>Тематика ВКР</th>
             <th>Тема ВКР</th>
+            <th class="small_col">Подтв. студента</th>
+            <th class="small_col">Подтв. преподавателя</th>
+            <th class="small_col">Подтв. администратора</th>
           </tr>
         </thead>
         <tbody>
@@ -27,6 +30,9 @@
             <td>{{ item.group_name }}</td>
             <td>{{ item.pretheme }}</td>
             <td>{{ item.theme }}</td>
+            <td>{{ item.confirmed_student == true ? 'Подтверждено' : item.confirmed_student == false ? 'Отклонено' : 'Ожидание' }}</td>
+            <td>{{ item.confirmed_teacher == true ? 'Подтверждено' : item.confirmed_student == false ? 'Отклонено' : 'Ожидание' }}</td>
+            <td>{{ item.confirmed_admin == true ? 'Подтверждено' : item.confirmed_student == false ? 'Отклонено' : 'Ожидание' }}</td>
           </tr>
         </tbody>
       </table>
@@ -34,9 +40,21 @@
         <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
             <div class="modal-content">
                 <h3>Информация о студенте</h3>
-                <p><strong>Тематика:</strong> {{ selectedStudent.pretheme }}</p>
-                <p><strong>Тема:</strong> {{ selectedStudent.theme }}</p>
-                <button @click="closeModal">Закрыть</button>
+                <div class="form-group">
+                  <label for="name">Тематика:</label>
+                  <input type="text" v-model="selectedStudent.pretheme" />
+                </div>
+                <div class="form-group">
+                  <label for="description">Тема:</label>
+                  <input type="text" v-model="selectedStudent.theme" />
+                </div>
+                <!-- <p><strong>Тематика:</strong> {{ selectedStudent.pretheme }}</p>
+                <p><strong>Тема:</strong> {{ selectedStudent.theme }}</p> -->
+                <!-- Кнопки отмены и сохранения -->
+                <div class="dialog-buttons">
+                  <button @click="closeModal">Отменить</button>
+                  <button @click="saveEdit">Сохранить</button>
+                </div>
             </div>
         </div>
     </div>
@@ -47,7 +65,6 @@
     export default{
         data() {
             return {
-                teacherName: "Иванов Иван Иванович", // Динамическое имя преподавателя
                 students: [], // Данные для таблицы
                 error: false, // Индикатор ошибки
                 isModalOpen: false,   // Состояние модального окна
@@ -69,12 +86,48 @@
                 }
             },
             openModal(student) {
-                this.selectedStudent = student;
+                this.selectedStudent = {...student};
                 this.isModalOpen = true;
             },
             closeModal() {
                 this.isModalOpen = false;
             },
+            async saveEdit() {
+              try {
+                this.selectedStudent.confirmed_admin = null;
+                this.selectedStudent.confirmed_student = null;
+                this.selectedStudent.confirmed_teacher = true;
+                const response = await axios
+                .post("http://localhost:8000/update_state", 
+                    {
+                      vkr_id: this.selectedStudent.vkr_id,
+                      pretheme: this.selectedStudent.pretheme,
+                      theme: this.selectedStudent.theme,
+                      confirmed_admin: this.selectedStudent.confirmed_admin,
+                      confirmed_teacher: this.selectedStudent.confirmed_teacher,
+                      confirmed_student: this.selectedStudent.confirmed_student,
+                    },
+                    {
+                        withCredentials: true, // Это позволяет отправлять и получать куки с сервером
+                    }
+                );
+
+                // Проверка успешного ответа от сервера
+                if (response.data.message) {
+                  const index = this.students.findIndex(i => i.student_id === this.selectedStudent.student_id);
+                  console.log(index);
+                  if (index !== -1) {
+                    this.students.splice(index, 1, { ...this.selectedStudent }); // Обновляем данные в таблице
+                  }
+                  this.isModalOpen = false; // Закрываем диалог после сохранения
+                } else {
+                  console.error("Ошибка при сохранении данных на сервере:", response);
+                }
+              } catch (error) {
+                console.error("Ошибка при сохранении данных:", error);
+              }
+            },
+            
         },
         mounted() {
             this.fetchData();
@@ -146,6 +199,24 @@
 .error-message {
   color: red;
   text-align: center;
+}
+
+.small_col {
+  width: 100px;
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+.form-group input {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
 /* Таблица данных */

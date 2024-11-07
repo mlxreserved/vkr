@@ -1,4 +1,10 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+
+
 // Обработка CORS для всех запросов
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     // Разрешаем запросы с любых источников (или с конкретного)
@@ -27,11 +33,17 @@ switch ($request) {
     case '/updateToken':
         include "Login/refresh_token.php";
         break;
+    case '/changePassword':
+        include 'Login/change_password.php';
+        break;
     case '/students':
         include "get_all_students_from_db.php";
         break;
+    case '/update_state':
+        include "update_state.php";
+        break;
     default:
-        http_response_code(404);
+        http_response_code(445);
         echo json_encode(['error' => 'Not found']);
         break;
 }

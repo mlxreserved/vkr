@@ -1,47 +1,90 @@
-// store/index.js
 import axios from "axios";
+import { createStore } from "vuex";
 
-export default {
+export default createStore({
     state: {
-        // Состояние для хранения данных о токенах
         authToken: null,
+        tokenRefreshTimer: null,
+        isAuthorised: false,
+        name: "",
+        lastname: "",
     },
     actions: {
+        // Действие для обновления токенаф
         refreshAccessToken({ commit }) {
             axios
                 .post(
                     "http://localhost:8000/refresh-token",
                     {},
-                    {
-                        withCredentials: true, // Важно для отправки куков с запросами
-                    }
+                    { withCredentials: true }
                 )
-                // eslint-disable-next-line
                 .then((response) => {
-                    // Тут мы не получаем токен, т.к. сервер обновит токен в куки автоматически.
+                    console.log(response);
                     console.log("Access token обновлен");
-                    // Если необходимо, можно обновить состояние, хотя мы этого делать не будем,
-                    // потому что куки сами обновляются
                 })
                 .catch((error) => {
                     console.error("Ошибка при обновлении токена", error);
-                    // В случае ошибки, например если refresh token тоже истек, нужно разлогинить пользователя
-                    commit("logout");
+                    commit("logout"); // Разлогиниваем пользователя в случае ошибки
                 });
+        },
+
+        // Действие для логина (не отправляется запрос, только обновляем состояние)
+        login({ commit }, user) {
+            // Запускаем таймер для обновления токенов
+            commit("startTokenRefreshTimer");
+            // устанавливаем имя и фамилию
+            commit("setUser", user);
+            commit("changeAuthorised");
+        },
+
+        // Действие для разлогина (не отправляется запрос, только обновляем состояние)
+        logout({ commit }) {
+            // Очистить токены в состоянии
+            commit("clearAuthToken");
+            // Остановить таймер
+            commit("stopTokenRefreshTimer");
+            commit("changeAuthorised");
+            // Перенаправить на страницу логина (это можно сделать в компоненте)
+            console.log("Пользователь разлогинен");
         },
     },
     mutations: {
+        // Устанавливаем токен в состояние
         setAuthToken(state, token) {
             state.authToken = token;
         },
-        logout(state) {
+
+        // Очищаем токен
+        clearAuthToken(state) {
             state.authToken = null;
-            // Очистить куки, перенаправить на страницу входа
-            document.cookie =
-                "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
-            document.cookie =
-                "refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
-            window.location.href = "/login"; // Перенаправление на страницу логина
+        },
+
+        // Запуск таймера для обновления токенов
+        startTokenRefreshTimer(state) {
+            state.tokenRefreshTimer = setInterval(() => {
+                this.dispatch("refreshAccessToken");
+            }, 58 * 60 * 1000); // Обновляем токен каждые 58 минут
+        },
+
+        // Остановка таймера
+        stopTokenRefreshTimer(state) {
+            if (state.tokenRefreshTimer) {
+                clearInterval(state.tokenRefreshTimer);
+                state.tokenRefreshTimer = null;
+            }
+        },
+
+        setUser(state, user) {
+            state.name = user.name;
+            state.lastname = user.lastname;
+        },
+
+        changeAuthorised(state) {
+            state.isAuthorised = !state.isAuthorised;
         },
     },
-};
+    getters: {
+        isAuthorised: (state) => state.isAuthorised,
+        userName: (state) => state.name + " " + state.lastname,
+    },
+});

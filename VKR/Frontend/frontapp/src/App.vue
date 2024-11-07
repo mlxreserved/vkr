@@ -1,8 +1,13 @@
 <template>
     <div>
         <nav>
-            <button @click="handleLogin">Логирование</button>
-            <button @click="handleLogout">Выйти</button>
+            <div v-if="isAuthorised" class="name-label">{{ userName }}</div>
+            <button v-if="isAuthorised" @click="handleStudents">Студенты</button> 
+            <button v-if="isAuthorised" @click="handleChangePassword">
+                Сменить пароль
+            </button>
+            <button v-if="isAuthorised" @click="handleLogout">Выйти</button>
+            <button v-else @click="handleLogin">Логирование</button>
         </nav>
         <div>
             <router-view></router-view>
@@ -12,15 +17,20 @@
 
 <script>
 import axios from "axios";
+import { mapGetters } from "vuex";
 export default {
     name: "App",
     components: {},
     methods: {
         handleLogout() {
             axios
-                .post("http://localhost:8000/logout")
+                .post("http://localhost:8000/logout", {
+                    withCredentials: true,
+                })
                 .then((response) => {
                     console.log(response);
+                    this.$store.dispatch("logout");
+                    this.$router.push("/login");
                 })
                 .catch((error) => {
                     console.error("Ошибка при выходе:", error);
@@ -29,6 +39,15 @@ export default {
         handleLogin() {
             this.$router.push("/login");
         },
+        handleChangePassword() {
+            this.$router.push("/changePassword");
+        },
+        handleStudents() {
+            this.$router.push("/teacher")
+        },
+    },
+    computed: {
+        ...mapGetters(["isAuthorised", "userName"]),
     },
 };
 </script>
@@ -47,6 +66,13 @@ nav {
     left: 0; /* Привязка к левому краю страницы */
     right: 0; /* Привязка к правому краю страницы */
     z-index: 1000; /* Обеспечение отображения поверх других элементов */
+}
+
+.name-label {
+    color: white;
+    display: flex;
+    justify-content: center; /* Горизонтальное выравнивание */
+    align-items: center;
 }
 
 body {

@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $stmt->fetch();
 
     // Проверяем пароль
-    if ($user && ($password == $user['password'])) {
+    if ($user && (hash('sha256', $password) === $user['password'])) {
 
         // Устанавливаем время жизни токенов
         $issuedAt = time();
@@ -66,7 +66,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Ответ клиенту (можно отправить любые данные, которые хотите)
         http_response_code(200);
-        echo json_encode(['role_id' => $user['role_id'], 'login' => $user['login']]);
+        echo json_encode([
+                        'role_id' => $user['role_id'], 
+                        'login' => $user['login'],
+                        'name' => $user['name'], 
+                        'lastname' => $user['lastname']
+                        ]);
 
     } else {
         http_response_code(404);
