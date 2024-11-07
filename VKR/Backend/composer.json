@@ -1,0 +1,17 @@
+{
+    "name": "cupitman/backend",
+    "autoload": {
+        "psr-4": {
+            "Cupitman\\Backend\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "CupitMan",
+            "email": "bespa-low@yandex.ru"
+        }
+    ],
+    "require": {
+        "firebase/php-jwt": "^6.10"
+    }
+}
