@@ -4,8 +4,6 @@ require 'optionsJWT.php';
 use Firebase\JWT\JWT;
 require __DIR__ . '/../database.php'; 
 
-header("Access-Control-Allow-Credentials: true");
-
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
