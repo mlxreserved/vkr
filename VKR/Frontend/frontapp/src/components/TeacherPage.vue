@@ -15,7 +15,6 @@
             <th>Имя</th>
             <th>Фамилия</th>
             <th>Группа</th>
-            <th>Тематика ВКР</th>
             <th>Тема ВКР</th>
             <th class="small_col">Подтв. студента</th>
             <th class="small_col">Подтв. преподавателя</th>
@@ -28,7 +27,6 @@
             <td>{{ item.name }}</td>
             <td>{{ item.lastname }}</td>
             <td>{{ item.group_name }}</td>
-            <td>{{ item.pretheme }}</td>
             <td>{{ item.theme }}</td>
             <td>{{ item.confirmed_student == true ? 'Подтверждено' : item.confirmed_student == false ? 'Отклонено' : 'Ожидание' }}</td>
             <td>{{ item.confirmed_teacher == true ? 'Подтверждено' : item.confirmed_student == false ? 'Отклонено' : 'Ожидание' }}</td>
@@ -40,10 +38,6 @@
         <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
             <div class="modal-content">
                 <h3>Информация о студенте</h3>
-                <div class="form-group">
-                  <label for="name">Тематика:</label>
-                  <input type="text" v-model="selectedStudent.pretheme" />
-                </div>
                 <div class="form-group">
                   <label for="description">Тема:</label>
                   <input type="text" v-model="selectedStudent.theme" />
@@ -79,7 +73,7 @@
                     }); // Запрос к API
 
                     this.students = response.data; // Заполняем таблицу данными
-                    
+                    console.log(response);
                 } catch (error) {
                     this.error = true;
                     console.error("Произошла ошибка:", error);

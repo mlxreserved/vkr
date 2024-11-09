@@ -21,7 +21,7 @@ const routes = [
         component: LoginPage,
     },
     {
-      path: "/teacher",
+      path: "/studentsTable",
       name: "TeacherPage",
       component: TeacherPage,
     },

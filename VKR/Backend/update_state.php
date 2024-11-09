@@ -10,17 +10,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $data = json_decode(file_get_contents('php://input'), true);
     $vkr_id = $data['vkr_id'];
-    $pretheme = $data['pretheme'];
     $theme = $data['theme'];
     $confirmed_admin = $data['confirmed_admin'];
     $confirmed_teacher = $data['confirmed_teacher'];
     $confirmed_student = $data['confirmed_student'];
 
     $sql = ("INSERT INTO 
-    CHANGES_THEME (VKR_ID, PRETHEME, THEME, CONFIRMED_ADMIN, CONFIRMED_TEACHER, CONFIRMED_STUDENT, DATE)
-    VALUES (?, ?, ?, ?, ?, ?, NOW())");
+    CHANGES_THEME (VKR_ID, THEME, CONFIRMED_ADMIN, CONFIRMED_TEACHER, CONFIRMED_STUDENT, DATE)
+    VALUES (?, ?, ?, ?, ?, NOW())");
     $stmt = $pdo->prepare($sql);
-    $result = $stmt->execute([$vkr_id, $pretheme, $theme, $confirmed_admin, $confirmed_teacher, $confirmed_student]);
+    $result = $stmt->execute([$vkr_id, $theme, $confirmed_admin, $confirmed_teacher, $confirmed_student]);
 
     if ($result) {
         http_response_code(201); // Успешно создано

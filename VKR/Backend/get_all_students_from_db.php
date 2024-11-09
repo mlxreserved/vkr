@@ -40,7 +40,6 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
                     U.NAME,
                     U.LASTNAME,
                     GC.GROUP_NAME,
-                    CT.PRETHEME,
                     CT.THEME,
                     CT.VKR_ID,
                     CT.CONFIRMED_STUDENT,
