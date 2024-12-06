@@ -1,8 +1,30 @@
 <template>
     <div>
         <nav>
+            <!-- Надпись "ВКР" слева -->
+            <div class="logo">ВКР</div>
+
+            <!-- 1 admin 2 teacher 3 student -->
             <div v-if="isAuthorised" class="name-label">{{ userName }}</div>
-            <button v-if="isAuthorised" @click="handleStudents">Студенты</button> 
+            <button v-if="role_id == 2" @click="handleStudents">
+                Студенты
+            </button>
+            <button v-if="role_id == 3" @click="handleEvents">
+                Мероприятия
+            </button>
+            <button v-if="role_id == 3" @click="handleProfile">Профиль</button>
+            <button v-if="role_id == 1" @click="handleWorkLoad">
+                Занятость руководителей
+            </button>
+            <button v-if="role_id == 1" @click="handleTeachers">
+                Распределение руководителей
+            </button>
+            <button v-if="role_id == 1" @click="handleThemes">
+                Распределение тем
+            </button>
+            <button v-if="role_id == 1" @click="handleStreams">
+                Управление потоками
+            </button>
             <button v-if="isAuthorised" @click="handleChangePassword">
                 Сменить пароль
             </button>
@@ -30,6 +52,7 @@ export default {
                 .then((response) => {
                     console.log(response);
                     this.$store.dispatch("logout");
+                    localStorage.clear();
                     this.$router.push("/login");
                 })
                 .catch((error) => {
@@ -43,20 +66,39 @@ export default {
             this.$router.push("/changePassword");
         },
         handleStudents() {
-            this.$router.push("/teacher")
+            this.$router.push("/studentsTable");
+        },
+        handleEvents() {
+            this.$router.push("/studentEvents");
+        },
+        handleProfile() {
+            this.$router.push("/profile");
+        },
+        handleStreams() {
+            this.$router.push("/streams");
+        },
+        handleWorkLoad() {
+            this.$router.push("/workload");
+        },
+        handleTeachers() {
+            this.$router.push("/worksTeachers");
+        },
+        handleThemes() {
+            this.$router.push("/worksThemes");
         },
     },
     computed: {
-        ...mapGetters(["isAuthorised", "userName"]),
+        ...mapGetters(["isAuthorised", "userName", "role_id"]),
     },
 };
 </script>
 
 <style scoped>
 nav {
-    font-family: "Finlandica", sans-serif;
+    font-family: "Roboto", sans-serif;
     display: flex;
     justify-content: flex-end; /* Выравнивание кнопок вправо */
+    align-items: center;
     background-color: #007bff; /* Цвет фона навигации */
     padding: 10px 20px; /* Уменьшенные отступы */
     border-radius: 0 0 8px 8px; /* Скругление углов внизу */
@@ -66,6 +108,15 @@ nav {
     left: 0; /* Привязка к левому краю страницы */
     right: 0; /* Привязка к правому краю страницы */
     z-index: 1000; /* Обеспечение отображения поверх других элементов */
+}
+
+.logo {
+    font-family: "Roboto", sans-serif;
+    font-size: 24px; /* Размер шрифта */
+    font-weight: bold; /* Жирный шрифт */
+    color: white;
+    margin-right: auto; /* Отодвигает логотип влево */
+    padding-left: 10px; /* Отступ слева */
 }
 
 .name-label {

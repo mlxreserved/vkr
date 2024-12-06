@@ -1,5 +1,5 @@
 <?php
-require '/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 require 'optionsJWT.php';
 use Firebase\JWT\JWT;
 require __DIR__ . '/../database.php'; 
@@ -14,8 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $refreshToken = $_COOKIE['refresh_token'];
 
     // Проверка refresh token в базе данных
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE refresh_token = ?");
-    $stmt->execute([$refreshToken]);
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE refresh_token = :refreshToken");
+    $stmt->execute($refreshToken);
     $user = $stmt->fetch();
 
     if ($user) {

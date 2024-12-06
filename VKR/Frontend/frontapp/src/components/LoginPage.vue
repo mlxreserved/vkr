@@ -54,11 +54,10 @@ export default {
                             name: response.data.name,
                             lastname: response.data.lastname,
                         };
-                        this.$store.dispatch("login", user);
+                        let role_id = response.data.role_id;
+                        this.$store.dispatch("login", {user, role_id});
                         this.$router.push("/profile"); // Перенаправляем на страницу профиля
-                        console.log(this.$store.state.isAuthorised);
                     } else if (response.data.error) {
-                        console.log(response.data.error);
                         this.errorMessage = response.data.error;
                     }
                 })
@@ -77,8 +76,7 @@ export default {
     },
     mounted() {
         this.$router.push("/login");
-        console.log(this.$store);
-        console.log(this.$store.state.isAuthorised);
+        console.log(this.$store.state);
     },
 };
 </script>

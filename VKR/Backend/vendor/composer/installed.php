@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'cupitman/backend',
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
-        'reference' => null,
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '15a6d443df62ba27fc06e229e5f3d8594ddb9036',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'cupitman/backend' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
-            'reference' => null,
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '15a6d443df62ba27fc06e229e5f3d8594ddb9036',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
